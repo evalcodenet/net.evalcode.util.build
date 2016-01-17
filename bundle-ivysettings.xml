@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-settings>
+  <settings defaultResolver="remote"/>
+  <credentials host="dist.evalcode.net" realm="Artifactory Realm" username="services" passwd="secret"/>
+  <resolvers>
+    <filesystem name="local">
+      <ivy pattern="${ivy.settings.dir}/dist/[organisation].[artifact]-[revision].xml"/>
+      <artifact pattern="${ivy.settings.dir}/dist/[organisation].[artifact]-[revision].[ext]"/>
+    </filesystem>
+    <ibiblio name="remote" m2compatible="true" root="http://dist.evalcode.net"/>
+  </resolvers>
+</ivy-settings>

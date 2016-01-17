@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="net.evalcode.util.build.common" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+
+  <!-- =================================
+        [LoC] Lines of Code
+       ================================= -->
+  <target name="report.sloccount">
+    <exec executable="sloccount" dir="${dir.src.main}" output="${dir.build}/sloccount.sc" failonerror="false">
+      <arg line="--duplicates --wide --details --addlangall ."/>
+    </exec>
+  </target>
+
+
+  <!-- =================================
+        Code Format & Conventions
+       ================================= -->
+  <target name="report.checkstyle">
+    <checkstyle config="${dir.net.evalcode.util.build.common}/config-checkstyle.xml" failonviolation="false">
+      <formatter type="xml" toFile="${dir.build}/checkstyle.xml"/>
+      <classpath refid="classpath.compile"/>
+      <classpath path="${dir.build.main}"/>
+      <fileset dir="${dir.src.main}">
+        <include name="**/*.java"/>
+      </fileset>
+    </checkstyle>
+  </target>
+
+
+  <!-- =================================
+        Duplicate Code Scanner
+       ================================= -->
+  <target name="report.cpd">
+    <cpd language="java" minimumTokenCount="100" outputFile="${dir.build}/cpd.xml" format="xml" encoding="utf-8">
+      <fileset dir="${dir.src.main}">
+        <include name="**/*.java"/>
+      </fileset>
+    </cpd>
+  </target>
+
+
+  <!-- =================================
+        Static Code Analysis: Findbugs
+       ================================= -->
+  <target name="report.findbugs">
+    <findbugs classpathref="classpath.net.evalcode.util.build.common" pluginlist="" adjustexperimental="true" outputFile="${dir.build}/findbugs.xml" output="xml" failonerror="false">
+      <auxclasspath refid="classpath.compile"/>
+      <sourcepath path="${dir.src.main}"/>
+      <class location="${dir.build.main}"/>
+    </findbugs>
+  </target>
+
+
+  <!-- =================================
+        Static Code Analysis: PMD
+       ================================= -->
+  <target name="report.pmd">
+    <pmd failonerror="false" failonruleviolation="false">
+      <ruleset>${dir.net.evalcode.util.build.common}/config-pmd.xml</ruleset>
+      <formatter type="xml" toFile="${dir.build}/pmd.xml"/>
+      <fileset dir="${dir.src.main}">
+       <include name="**/*.java"/>
+      </fileset>
+    </pmd>
+  </target>
+
+
+  <!-- =================================
+        Code Coverage Analysis: Clover
+       ================================= -->
+  <target name="report.clover">
+    <clover-report projectname="${bundle.name.full}" tmpdir="${dir.build.clover}">
+      <current outfile="${dir.build.clover}/clover.xml" title="${bundle.name.full}" alwaysreport="true" includefailedtestcoverage="true" showuniquecoverage="true" charset="utf-8">
+        <format type="xml"/>
+      </current>
+      <current outfile="${dir.build.clover}" title="${bundle.name.full}" alwaysreport="true" includefailedtestcoverage="true" showuniquecoverage="true" charset="utf-8">
+        <format type="html" srclevel="true"/>
+      </current>
+    </clover-report>
+  </target>
+
+  <target name="report.clover.hide-sources">
+    <clover-report projectname="${bundle.name.full}" tmpdir="${dir.build.clover}">
+      <current outfile="${dir.build.clover}/clover.xml" title="${bundle.name.full}" alwaysreport="true" includefailedtestcoverage="true" showuniquecoverage="true" charset="utf-8">
+        <format type="xml"/>
+      </current>
+      <current outfile="${dir.build.clover}" title="${bundle.name.full}" alwaysreport="true" includefailedtestcoverage="true" showuniquecoverage="true" charset="utf-8">
+        <format type="html" srclevel="false"/>
+      </current>
+    </clover-report>
+  </target>
+
+
+  <!-- =================================
+        Code Coverage Analysis: Emma [deprecated]
+       ================================= -->
+  <target name="report.emma">
+    <emma>
+      <report sourcepath="${dir.src.main}" sort="+block,+name,+method,+class" metrics="method:70,block:80,line:80,class:100">
+        <fileset dir="${dir.build}">
+          <include name="**/*emma"/>
+        </fileset>
+        <xml outfile="${dir.build}/emma.xml" depth="method"/>
+      </report>
+    </emma>
+  </target>
+
+
+  <!-- =================================
+        Global Properties
+       ================================= -->
+  <dirname file="${ant.file.net.evalcode.util.build.common}" property="dir.net.evalcode.util.build.common"/>
+
+  <condition property="ivy.home" value="${env.IVY_HOME}">
+    <isset property="env.IVY_HOME"/>
+  </condition>
+
+  <property name="ivy.home" value="${user.home}/.ivy2"/>
+  <property name="ivy.lib" value="${ivy.home}/lib"/>
+  <property name="ivy.artifact" value="ivy-2.2.0.jar"/>
+  <property name="ivy.url" value="http://dist.evalcode.net/org/apache/ivy/2.2.0/${ivy.artifact}"/>
+
+  <available property="ivy.retrieved" file="${ivy.lib}/${ivy.artifact}">
+    <filepath id="classpath.ivy" path="${ivy.lib}/${ivy.artifact}"/>
+  </available>
+
+  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath.ivy" onerror="ignore"/>
+
+  <available property="build.installed" file="${dir.net.evalcode.util.build.common}/.installed"/>
+
+  <path id="classpath.net.evalcode.util.build.common">
+    <fileset dir="${dir.net.evalcode.util.build.common}">
+      <include name="*.jar"/>
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <taskdef name="cpd" classname="net.sourceforge.pmd.cpd.CPDTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="emma" classname="com.vladium.emma.emmaTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="checkstyle" classname="com.puppycrawl.tools.checkstyle.CheckStyleTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="yguard" classname="com.yworks.yguard.YGuardTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="proguard" classname="proguard.ant.ProGuardTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-optimized-testset" classname="com.cenqua.clover.types.CloverOptimizedTestSet" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-always-run" classname="com.cenqua.clover.types.CloverAlwaysRunTestSet" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-env" classname="com.cenqua.clover.tasks.CloverEnvTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-log" classname="com.cenqua.clover.tasks.CloverLogTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-check" classname="com.cenqua.clover.tasks.CloverPassTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-setup" classname="com.cenqua.clover.tasks.CloverSetupTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-clean" classname="com.cenqua.clover.tasks.CloverCleanTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-historypoint" classname="com.cenqua.clover.tasks.HistoryPointTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-report" classname="com.cenqua.clover.tasks.CloverReportTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-html-report" classname="com.cenqua.clover.tasks.CloverHtmlReportTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-pdf-report" classname="com.cenqua.clover.tasks.CloverPdfReportTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-instr" classname="com.cenqua.clover.tasks.CloverInstrTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-instrument" classname="com.cenqua.clover.tasks.CloverInstrumentTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-merge" classname="com.cenqua.clover.tasks.CloverMergeTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-snapshot" classname="com.cenqua.clover.tasks.CloverSnapshotTask" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-can-optimize" classname="com.cenqua.clover.tasks.CloverCanOptimizeTests" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-format" classname="com.cenqua.clover.tasks.CloverFormatType" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-columns" classname="com.cenqua.clover.tasks.ColumnsEx" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+  <taskdef name="clover-optimized-selector" classname="com.cenqua.clover.types.CloverOptimizedTestSelector" classpathref="classpath.net.evalcode.util.build.common" onerror="ignore"/>
+
+
+  <!-- - - - - - - - - - - - - - - - - -
+        setup
+       - - - - - - - - - - - - - - - - - -->
+  <target name="retrieve.ivy" unless="ivy.retrieved">
+    <mkdir dir="${ivy.lib}"/>
+    <echo message="Retrieving: ${ivy.url}"/>
+    <get src="${ivy.url}" dest="${ivy.lib}/${ivy.artifact}" usetimestamp="true"/>
+  </target>
+
+
+  <target name="install.build" depends="retrieve.ivy" unless="build.installed">
+    <property url="http://dist.evalcode.net/net/evalcode/util/build/common/1.0.0/common-1.0.0-build.properties"/>
+    <property name="dir.lib" value="${basedir}/lib"/>
+    
+    <delete dir="${basedir}" excludes="build.xml" includeemptydirs="true"/>
+    <mkdir dir="${dir.lib}"/>
+
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.common.module}/${net.evalcode.util.build.common.version}/${net.evalcode.util.build.common.module}-${net.evalcode.util.build.common.version}-${net.evalcode.util.build.common.ivy}" dest="${dir.net.evalcode.util.build.common}/${net.evalcode.util.build.common.ivy}"/>
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.common.module}/${net.evalcode.util.build.common.version}/${net.evalcode.util.build.common.module}-${net.evalcode.util.build.common.version}-${net.evalcode.util.build.common.ivysettings}" dest="${dir.net.evalcode.util.build.common}/${net.evalcode.util.build.common.ivysettings}"/>
+
+    <ivy:resolve />
+    <ivy:retrieve pattern="${dir.lib}/[organisation].[artifact].[ext]"/>
+
+    <copy todir="${dir.net.evalcode.util.build.common}">
+      <fileset dir="${dir.lib}">
+        <include name="*"/>
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <delete dir="${dir.lib}" includeemptydirs="true"/>
+
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.common.module}/${net.evalcode.util.build.common.version}/${net.evalcode.util.build.common.module}-${net.evalcode.util.build.common.version}-${net.evalcode.util.build.common.config.pmd}" dest="${dir.net.evalcode.util.build.common}/${net.evalcode.util.build.common.config.pmd}"/>
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.common.module}/${net.evalcode.util.build.common.version}/${net.evalcode.util.build.common.module}-${net.evalcode.util.build.common.version}-${net.evalcode.util.build.common.config.checkstyle}" dest="${dir.net.evalcode.util.build.common}/${net.evalcode.util.build.common.config.checkstyle}"/>
+
+    <delete dir="${dir.net.evalcode.util.build.common}" includes="${net.evalcode.util.build.common.ivy}"/>
+    <delete dir="${dir.net.evalcode.util.build.common}" includes="${net.evalcode.util.build.common.ivysettings}"/>
+
+    <touch file="${dir.net.evalcode.util.build.common}/.installed"/>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - -
+        cleanup
+       - - - - - - - - - - - - - - - - - -->
+  <target name="uninstall.build">
+    <delete file="${dir.net.evalcode.util.build.common}/.installed"/>
+  </target>
+
+
+</project>

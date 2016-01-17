@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="net.evalcode.util.build.test" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+
+  <!-- =================================
+        Global Properties
+       ================================= -->
+  <dirname file="${ant.file.net.evalcode.util.build.test}" property="dir.net.evalcode.util.build.test"/>
+
+  <condition property="ivy.home" value="${env.IVY_HOME}">
+    <isset property="env.IVY_HOME"/>
+  </condition>
+
+  <property name="ivy.home" value="${user.home}/.ivy2"/>
+  <property name="ivy.lib" value="${ivy.home}/lib"/>
+  <property name="ivy.artifact" value="ivy-2.2.0.jar"/>
+  <property name="ivy.url" value="http://dist.evalcode.net/org/apache/ivy/2.2.0/${ivy.artifact}"/>
+
+  <available property="ivy.retrieved" file="${ivy.lib}/${ivy.artifact}">
+    <filepath id="classpath.ivy" path="${ivy.lib}/${ivy.artifact}"/>
+  </available>
+
+  <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath.ivy" onerror="ignore"/>
+
+  <available property="test.installed" file="${dir.net.evalcode.util.build.test}/.installed"/>
+
+  <path id="classpath.net.evalcode.util.build.test">
+    <fileset dir="${dir.net.evalcode.util.build.test}">
+      <include name="*.jar"/>
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- - - - - - - - - - - - - - - - - -
+        setup
+       - - - - - - - - - - - - - - - - - -->
+  <target name="retrieve.ivy" unless="ivy.retrieved">
+    <mkdir dir="${ivy.lib}"/>
+    <echo message="Retrieving: ${ivy.url}"/>
+    <get src="${ivy.url}" dest="${ivy.lib}/${ivy.artifact}" usetimestamp="true"/>
+  </target>
+
+
+  <target name="install.test" depends="retrieve.ivy" unless="test.installed">
+    <property url="http://dist.evalcode.net/net/evalcode/util/build/test/1.0.0/test-1.0.0-build.properties"/>
+    <property name="dir.lib" value="${basedir}/lib"/>
+
+    <delete dir="${basedir}" excludes="build.xml" includeemptydirs="true"/>
+    <mkdir dir="${dir.lib}"/>
+
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.test.module}/${net.evalcode.util.build.test.version}/${net.evalcode.util.build.test.module}-${net.evalcode.util.build.test.version}-${net.evalcode.util.build.test.ivy}" dest="${dir.net.evalcode.util.build.test}/${net.evalcode.util.build.test.ivy}"/>
+    <get src="${net.evalcode.util.build.repository}/${net.evalcode.util.build.test.module}/${net.evalcode.util.build.test.version}/${net.evalcode.util.build.test.module}-${net.evalcode.util.build.test.version}-${net.evalcode.util.build.test.ivysettings}" dest="${dir.net.evalcode.util.build.test}/${net.evalcode.util.build.test.ivysettings}"/>
+
+    <ivy:resolve/>
+    <ivy:retrieve pattern="${dir.lib}/[organisation].[artifact].[ext]"/>
+
+    <copy todir="${dir.net.evalcode.util.build.test}">
+      <fileset dir="${dir.lib}">
+        <include name="*"/>
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+
+    <delete dir="${dir.lib}" includeemptydirs="true"/>
+
+    <delete dir="${dir.net.evalcode.util.build.test}" includes="${net.evalcode.util.build.test.ivy}"/>
+    <delete dir="${dir.net.evalcode.util.build.test}" includes="${net.evalcode.util.build.test.ivysettings}"/>
+
+    <touch file="${dir.net.evalcode.util.build.test}/.installed"/>
+  </target>
+
+
+  <!-- - - - - - - - - - - - - - - - - - 
+        cleanup
+       - - - - - - - - - - - - - - - - - -->
+  <target name="uninstall.test">
+    <delete file="${dir.net.evalcode.util.build.test}/.installed"/>
+  </target>
+
+
+</project>

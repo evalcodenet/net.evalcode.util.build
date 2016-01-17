@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-module xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0"
+  xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+  <info organisation="net.evalcode.util.build" module="common" revision="1.0.0" status="release">
+    <description homepage="http://dist.evalcode.net/">
+      net.evalcode.util.build.common
+    </description>
+  </info>
+  <configurations>
+    <conf name="default"/>
+  </configurations>
+  <dependencies>
+    <dependency org="antlr" name="antlr" rev="latest.integration" conf="default"/>
+    <dependency org="com.atlassian" name="clover" rev="latest.integration" conf="default"/>
+    <dependency org="com.google" name="collections" rev="latest.integration" conf="default"/>
+    <dependency org="com.puppycrawl.tools" name="checkstyle" rev="latest.integration" conf="default"/>
+    <dependency org="com.vladium" name="emma" rev="latest.integration" conf="default"/>
+    <dependency org="com.vladium" name="emma-ant" rev="latest.integration" conf="default"/>
+    <dependency org="edu.umd.cs" name="findbugs" rev="latest.integration" conf="default"/>
+    <dependency org="edu.umd.cs" name="findbugs-annotations" rev="latest.integration" conf="default"/>
+    <dependency org="edu.umd.cs" name="findbugs-ant" rev="latest.integration" conf="default"/>
+    <dependency org="edu.umd.cs" name="findbugs-jFormatString" rev="latest.integration" conf="default"/>
+    <dependency org="javax" name="annotation" rev="latest.integration" conf="default"/>
+    <dependency org="net.sourceforge" name="pmd" rev="latest.integration" conf="default"/>
+    <dependency org="org.apache" name="bcel" rev="latest.integration" conf="default"/>
+    <dependency org="org.apache" name="commons-beanutils" rev="latest.integration" conf="default"/>
+    <dependency org="org.apache" name="commons-cli" rev="latest.integration" conf="default"/>
+    <dependency org="org.apache" name="commons-lang" rev="latest.integration" conf="default"/>
+    <dependency org="org.apache" name="commons-logging" rev="latest.integration" conf="default"/>
+    <dependency org="org" name="dom4j" rev="latest.integration" conf="default"/>
+    <dependency org="org" name="jaxen" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm-analysis" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm-commons" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm-tree" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm-util" rev="latest.integration" conf="default"/>
+    <dependency org="org.objectweb" name="asm-xml" rev="latest.integration" conf="default"/>
+  </dependencies>
+</ivy-module>

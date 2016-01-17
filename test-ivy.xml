@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-module version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+  <info organisation="net.evalcode.util.build" module="test" revision="1.0.0" status="release">
+    <description homepage="http://dist.evalcode.net/">
+      net.evalcode.util.build.test
+    </description>
+  </info>
+  <configurations>
+    <conf name="default"/>
+  </configurations>
+  <dependencies>
+    <dependency org="org" name="junit" rev="latest.integration" conf="default"/>
+    <dependency org="org" name="mockito" rev="latest.integration" conf="default"/>
+  </dependencies>
+</ivy-module>
